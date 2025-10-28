@@ -14,11 +14,10 @@ export class UUID implements ValueObject<string> {
   }
 
   private validate(value: string): void {
-    if (
-      !/^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/.test(
-        value,
-      )
-    ) {
+    const pattern =
+      '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$';
+    const regex = new RegExp(pattern, 'gm');
+    if (!regex.test(value)) {
       throw new ValueObjectValidationError('Invalid UUID format');
     }
   }

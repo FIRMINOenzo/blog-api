@@ -2,6 +2,8 @@ import { ValueObjectValidationError } from '../errors/value-object-validation.er
 import { UUID } from './uuid.vo';
 
 describe('UUID Value Object', () => {
+  const randomUUID = crypto.randomUUID();
+
   test.each([
     [
       '0e2451c3-fc42-40d6-917a-57d447e436a6',
@@ -11,6 +13,7 @@ describe('UUID Value Object', () => {
       '6839b3fc-f5b3-42b9-b2fc-ffe030cdf568',
       '6839b3fc-f5b3-42b9-b2fc-ffe030cdf568',
     ],
+    [randomUUID, randomUUID],
   ])('should create a valid UUID: %s', (uuid, expected) => {
     const uuidVO = new UUID(uuid);
     expect(uuidVO.getValue()).toBe(expected);
