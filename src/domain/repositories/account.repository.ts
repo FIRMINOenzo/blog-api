@@ -5,4 +5,5 @@ export interface AccountRepository {
   findById(id: string): Promise<AccountEntity | null>;
   findByEmail(email: string): Promise<AccountEntity | null>;
   update(account: AccountEntity): Promise<void>;
+  delete(account: AccountEntity): Promise<void>;
 }
