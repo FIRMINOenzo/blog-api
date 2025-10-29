@@ -45,27 +45,37 @@ export class InMemoryRoleRepository implements RoleRepository {
   };
 
   private readonly roles = {
-    [crypto.randomUUID()]: new RoleEntity(crypto.randomUUID(), 'ADMIN', [
-      this.permissions.createAccount,
-      this.permissions.readAccount,
-      this.permissions.updateAccount,
-      this.permissions.deleteAccount,
-      this.permissions.createArticle,
-      this.permissions.readArticle,
-      this.permissions.updateArticle,
-      this.permissions.deleteArticle,
-    ]),
+    '1b3a301b-3dc0-4dcc-bd6e-05bdfba345f3': new RoleEntity(
+      crypto.randomUUID(),
+      'ADMIN',
+      [
+        this.permissions.createAccount,
+        this.permissions.readAccount,
+        this.permissions.updateAccount,
+        this.permissions.deleteAccount,
+        this.permissions.createArticle,
+        this.permissions.readArticle,
+        this.permissions.updateArticle,
+        this.permissions.deleteArticle,
+      ],
+    ),
 
-    [crypto.randomUUID()]: new RoleEntity(crypto.randomUUID(), 'EDITOR', [
-      this.permissions.createArticle,
-      this.permissions.readArticle,
-      this.permissions.updateArticle,
-      this.permissions.deleteArticle,
-    ]),
+    'e7f83766-4533-4fd5-887f-2285a721cb3f': new RoleEntity(
+      crypto.randomUUID(),
+      'EDITOR',
+      [
+        this.permissions.createArticle,
+        this.permissions.readArticle,
+        this.permissions.updateArticle,
+        this.permissions.deleteArticle,
+      ],
+    ),
 
-    [crypto.randomUUID()]: new RoleEntity(crypto.randomUUID(), 'READER', [
-      this.permissions.readArticle,
-    ]),
+    'abb27e14-9ee1-4ff6-b5d8-74d44b5bdf1e': new RoleEntity(
+      crypto.randomUUID(),
+      'READER',
+      [this.permissions.readArticle],
+    ),
   };
 
   findById(id: string): Promise<RoleEntity | null> {
