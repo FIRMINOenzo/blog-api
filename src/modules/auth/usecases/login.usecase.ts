@@ -1,8 +1,10 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { AccountRepository } from 'src/domain/repositories/account.repository';
 import { HashPasswordService } from 'src/infra/services/hash-password.service';
 import { JwtPayload } from '../strategies/jwt.strategy';
+import { Email, Password } from 'src/domain/value-objects';
+import { UnauthorizedError } from 'src/domain/errors/unauthorized.error';
 
 @Injectable()
 export class LoginUseCase {
@@ -14,17 +16,20 @@ export class LoginUseCase {
   ) {}
 
   async execute(input: LoginInput): Promise<LoginOutput> {
-    const account = await this.accountRepository.findByEmail(input.email);
+    const email = new Email(input.email);
+    const password = new Password(input.password);
+
+    const account = await this.accountRepository.findByEmail(email.getValue());
     if (!account) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedError('Invalid credentials');
     }
 
     const isPasswordValid = await this.hashPasswordService.compare(
-      input.password,
+      password.getValue(),
       account.getPassword(),
     );
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedError('Invalid credentials');
     }
 
     const payload: JwtPayload = {
