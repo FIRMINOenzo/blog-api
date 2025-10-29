@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AccountController } from './account.controller';
 import { CreateAccountUseCase } from './usecases/create-account.usecase';
 import { HashPasswordService } from 'src/infra/services/hash-password.service';
-import { InMemoryAccountRepository } from 'src/infra/repositories/in-memory-account.repository';
-import { InMemoryRoleRepository } from 'src/infra/repositories/in-memory-role.repository';
+import { DbAccountRepository } from 'src/infra/repositories/db-account.repository';
+import { DbRoleRepository } from 'src/infra/repositories/db-role.repository';
+import { DbAccountEntity } from 'src/infra/database/entities/db-account.entity';
+import { DbRoleEntity } from 'src/infra/database/entities/db-role.entity';
 
 @Module({
   imports: [
@@ -12,6 +15,7 @@ import { InMemoryRoleRepository } from 'src/infra/repositories/in-memory-role.re
       secret: process.env.JWT_SECRET || 'your-secret-key-change-in-production',
       signOptions: { expiresIn: '1d' },
     }),
+    TypeOrmModule.forFeature([DbAccountEntity, DbRoleEntity]),
   ],
   controllers: [AccountController],
   providers: [
@@ -19,13 +23,18 @@ import { InMemoryRoleRepository } from 'src/infra/repositories/in-memory-role.re
     HashPasswordService,
     {
       provide: 'AccountRepository',
-      useClass: InMemoryAccountRepository,
+      useClass: DbAccountRepository,
     },
     {
       provide: 'RoleRepository',
-      useClass: InMemoryRoleRepository,
+      useClass: DbRoleRepository,
     },
-    InMemoryRoleRepository,
+  ],
+  exports: [
+    'AccountRepository',
+    'RoleRepository',
+    HashPasswordService,
+    CreateAccountUseCase,
   ],
 })
 export class AccountModule {}
