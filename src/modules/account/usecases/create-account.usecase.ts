@@ -1,11 +1,13 @@
 import { AccountEntity } from 'src/domain/entities/account.entity';
 import { NotFoundError } from 'src/domain/errors/not-found.error';
+import { ConflictError } from 'src/domain/errors/conflict.error';
 import { Password } from 'src/domain/value-objects';
 import { JwtService } from '@nestjs/jwt';
 import { Inject, Injectable } from '@nestjs/common';
 import { HashPasswordService } from 'src/infra/services/hash-password.service';
 import type { AccountRepository } from 'src/domain/repositories/account.repository';
 import type { RoleRepository } from 'src/domain/repositories/role.repository';
+import { JwtPayload } from 'src/modules/auth/strategies/jwt.strategy';
 
 @Injectable()
 export class CreateAccountUseCase {
@@ -25,7 +27,11 @@ export class CreateAccountUseCase {
     const existingAccount = await this.accountRepository.findByEmail(
       input.email,
     );
-    if (existingAccount) throw new Error('Account already exists');
+    if (existingAccount) {
+      throw new ConflictError(
+        `Account with email '${input.email}' already exists`,
+      );
+    }
 
     const role = await this.roleRepository.findById(input.roleId);
     if (!role) throw new NotFoundError('Role not found');
@@ -43,7 +49,15 @@ export class CreateAccountUseCase {
       role,
     );
     await this.accountRepository.create(createdAccount);
-    const token = await this.jwtService.signAsync({});
+    const token = await this.jwtService.signAsync<JwtPayload>({
+      sub: createdAccount.getId(),
+      email: createdAccount.getEmail(),
+      name: createdAccount.getName(),
+      role: {
+        id: createdAccount.getRole()!.getId(),
+        name: createdAccount.getRole()!.getName(),
+      },
+    });
     return { token };
   }
 }
