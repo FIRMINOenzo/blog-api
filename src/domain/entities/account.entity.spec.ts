@@ -154,10 +154,8 @@ describe('Account Entity', () => {
         'Password123',
         accountRole,
       );
-      expect(() => account.changePassword(account, 'invalid')).toThrow(
-        new ValueObjectValidationError(
-          'Password must be at least 8 characters long',
-        ),
+      expect(() => account.changePassword(account, '')).toThrow(
+        new ValueObjectValidationError('Hashed password cannot be empty'),
       );
     });
   });

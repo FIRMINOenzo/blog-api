@@ -2,7 +2,7 @@ import { ForbiddenError } from '../errors/forbidden.error';
 import {
   Email,
   Name,
-  Password,
+  HashedPassword,
   UUID,
   PermissionAction,
   PermissionSubject,
@@ -15,7 +15,7 @@ export class AccountEntity {
   private updatedAt: Date;
   private name: Name;
   private email: Email;
-  private password: Password;
+  private password: HashedPassword;
   private role: RoleEntity | null;
 
   constructor(
@@ -32,7 +32,7 @@ export class AccountEntity {
     this.updatedAt = updatedAt;
     this.name = new Name(name);
     this.email = new Email(email);
-    this.password = new Password(password);
+    this.password = new HashedPassword(password);
     this.role = role ?? null;
   }
 
@@ -90,7 +90,7 @@ export class AccountEntity {
       );
     }
 
-    this.password = new Password(newPassword);
+    this.password = new HashedPassword(newPassword);
     this.updatedAt = new Date();
   }
 
