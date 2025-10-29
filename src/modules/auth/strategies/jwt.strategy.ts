@@ -1,9 +1,10 @@
-import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import type { AccountRepository } from 'src/domain/repositories/account.repository';
 import { AccountEntity } from 'src/domain/entities/account.entity';
+import { UnauthorizedError } from 'src/domain/errors/unauthorized.error';
 
 export interface JwtPayload {
   sub: string;
@@ -33,7 +34,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const account = await this.accountRepository.findById(payload.sub);
 
     if (!account) {
-      throw new UnauthorizedException('Invalid token');
+      throw new UnauthorizedError('User not found or deleted');
     }
 
     return account;
