@@ -37,11 +37,20 @@ export class AccountEntity {
   }
 
   static create(
+    allowedBy: AccountEntity,
     name: string,
     email: string,
     password: string,
     role: RoleEntity,
   ): AccountEntity {
+    if (
+      !allowedBy
+        .getRole()
+        ?.hasPermission(PermissionAction.CREATE, PermissionSubject.ACCOUNT)
+    ) {
+      throw new ForbiddenError('You are not allowed to create an account');
+    }
+
     const id = crypto.randomUUID();
     return new AccountEntity(
       id,

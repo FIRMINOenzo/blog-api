@@ -9,12 +9,17 @@ import { AccountEntity } from './account.entity';
 import { RoleEntity, RoleName } from './role.entity';
 
 describe('Account Entity', () => {
+  const createAccountPermission = new Permission(
+    PermissionAction.CREATE,
+    PermissionSubject.ACCOUNT,
+  );
   const updateAccountPermission = new Permission(
     PermissionAction.UPDATE,
     PermissionSubject.ACCOUNT,
   );
   const accountRole = new RoleEntity(crypto.randomUUID(), RoleName.ADMIN, [
     updateAccountPermission,
+    createAccountPermission,
   ]);
   const accountWithPermission = new AccountEntity(
     crypto.randomUUID(),
@@ -38,6 +43,7 @@ describe('Account Entity', () => {
   describe('Create', () => {
     test('should create a valid account', () => {
       const account = AccountEntity.create(
+        accountWithPermission,
         'John Doe',
         'john.doe@example.com',
         'Password123',
@@ -52,6 +58,7 @@ describe('Account Entity', () => {
     test('should throw an error when creating an account with an invalid information', () => {
       expect(() =>
         AccountEntity.create(
+          accountWithPermission,
           '',
           'john.doe@example.com',
           'Password123',
@@ -63,11 +70,24 @@ describe('Account Entity', () => {
         ),
       );
     });
+
+    test('should throw an error when creating an account without permission', () => {
+      expect(() =>
+        AccountEntity.create(
+          accountWithoutPermission,
+          'John Doe',
+          'john.doe@example.com',
+          'Password123',
+          new RoleEntity(crypto.randomUUID(), RoleName.ADMIN),
+        ),
+      ).toThrow(new ForbiddenError('You are not allowed to create an account'));
+    });
   });
 
   describe('Update Information', () => {
     test('should update the account information', () => {
       const account = AccountEntity.create(
+        accountWithPermission,
         'John Doe',
         'john.doe@example.com',
         'Password123',
@@ -84,6 +104,7 @@ describe('Account Entity', () => {
 
     test('should throw an error when updating the account information with an invalid information', () => {
       const account = AccountEntity.create(
+        accountWithPermission,
         'John Doe',
         'john.doe@example.com',
         'Password123',
@@ -100,6 +121,7 @@ describe('Account Entity', () => {
 
     test('should throw an error when updating the account information without permission', () => {
       const account = AccountEntity.create(
+        accountWithPermission,
         'John Doe',
         'john.doe@example.com',
         'Password123',
@@ -122,6 +144,7 @@ describe('Account Entity', () => {
   describe('Change Password', () => {
     test('should change the account password', () => {
       const account = AccountEntity.create(
+        accountWithPermission,
         'John Doe',
         'john.doe@example.com',
         'Password123',
@@ -133,6 +156,7 @@ describe('Account Entity', () => {
 
     test('should throw an error when changing the account password without permission', () => {
       const account = AccountEntity.create(
+        accountWithPermission,
         'John Doe',
         'john.doe@example.com',
         'Password123',
@@ -149,6 +173,7 @@ describe('Account Entity', () => {
 
     test('should throw an error when changing the account password with an invalid password', () => {
       const account = AccountEntity.create(
+        accountWithPermission,
         'John Doe',
         'john.doe@example.com',
         'Password123',
@@ -163,6 +188,7 @@ describe('Account Entity', () => {
   describe('Set Role', () => {
     test('should set the account role', () => {
       const account = AccountEntity.create(
+        accountWithPermission,
         'John Doe',
         'john.doe@example.com',
         'Password123',
@@ -178,6 +204,7 @@ describe('Account Entity', () => {
 
     test('should throw an error when setting the account role without permission', () => {
       const account = AccountEntity.create(
+        accountWithPermission,
         'John Doe',
         'john.doe@example.com',
         'Password123',
