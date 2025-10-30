@@ -5,6 +5,7 @@ import {
   Permission,
   PermissionAction,
   PermissionSubject,
+  UUID,
 } from 'src/domain/value-objects';
 
 @Injectable()
@@ -78,8 +79,8 @@ export class InMemoryRoleRepository implements RoleRepository {
     ),
   };
 
-  findById(id: string): Promise<RoleEntity | null> {
-    return Promise.resolve(this.roles[id] ?? null);
+  findById(id: UUID): Promise<RoleEntity | null> {
+    return Promise.resolve(this.roles[id.getValue()] ?? null);
   }
 
   findByName(name: string): Promise<RoleEntity | null> {

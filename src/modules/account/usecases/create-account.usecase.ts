@@ -1,7 +1,7 @@
 import { AccountEntity } from 'src/domain/entities/account.entity';
 import { NotFoundError } from 'src/domain/errors/not-found.error';
 import { ConflictError } from 'src/domain/errors/conflict.error';
-import { Password } from 'src/domain/value-objects';
+import { Password, UUID } from 'src/domain/value-objects';
 import { JwtService } from '@nestjs/jwt';
 import { Inject, Injectable } from '@nestjs/common';
 import { HashPasswordService } from 'src/infra/services/hash-password.service';
@@ -33,7 +33,7 @@ export class CreateAccountUseCase {
       );
     }
 
-    const role = await this.roleRepository.findById(input.roleId);
+    const role = await this.roleRepository.findById(new UUID(input.roleId));
     if (!role) throw new NotFoundError('Role not found');
 
     const password = new Password(input.password);

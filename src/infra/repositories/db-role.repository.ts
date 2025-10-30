@@ -7,6 +7,7 @@ import {
   Permission,
   PermissionAction,
   PermissionSubject,
+  UUID,
 } from 'src/domain/value-objects';
 import { Injectable } from '@nestjs/common';
 
@@ -34,9 +35,9 @@ export class DbRoleRepository implements RoleRepository {
     return new RoleEntity(dbRole.id, dbRole.name, permissions);
   }
 
-  async findById(id: string): Promise<RoleEntity | null> {
+  async findById(id: UUID): Promise<RoleEntity | null> {
     const dbRole = await this.repository.findOne({
-      where: { id },
+      where: { id: id.getValue() },
       relations: ['permissions'],
     });
     if (!dbRole) return null;

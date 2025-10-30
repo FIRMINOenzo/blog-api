@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AccountEntity } from 'src/domain/entities/account.entity';
 import { AccountRepository } from 'src/domain/repositories/account.repository';
+import { UUID } from 'src/domain/value-objects';
 
 @Injectable()
 export class InMemoryAccountRepository implements AccountRepository {
@@ -11,8 +12,8 @@ export class InMemoryAccountRepository implements AccountRepository {
     return Promise.resolve();
   }
 
-  findById(id: string): Promise<AccountEntity | null> {
-    return Promise.resolve(this.accounts.get(id) ?? null);
+  findById(id: UUID): Promise<AccountEntity | null> {
+    return Promise.resolve(this.accounts.get(id.getValue()) ?? null);
   }
 
   findByEmail(email: string): Promise<AccountEntity | null> {
@@ -22,6 +23,10 @@ export class InMemoryAccountRepository implements AccountRepository {
       }
     }
     return Promise.resolve(null);
+  }
+
+  findAll(): Promise<AccountEntity[]> {
+    return Promise.resolve(Array.from(this.accounts.values()));
   }
 
   update(account: AccountEntity): Promise<void> {

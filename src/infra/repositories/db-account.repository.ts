@@ -9,6 +9,7 @@ import {
   Permission,
   PermissionAction,
   PermissionSubject,
+  UUID,
 } from 'src/domain/value-objects';
 
 @Injectable()
@@ -31,9 +32,9 @@ export class DbAccountRepository implements AccountRepository {
     await this.repository.save(dbAccount);
   }
 
-  async findById(id: string): Promise<AccountEntity | null> {
+  async findById(id: UUID): Promise<AccountEntity | null> {
     const dbAccount = await this.repository.findOne({
-      where: { id, isDeleted: false },
+      where: { id: id.getValue(), isDeleted: false },
       relations: ['role', 'role.permissions'],
     });
     if (!dbAccount) return null;
@@ -47,6 +48,15 @@ export class DbAccountRepository implements AccountRepository {
     });
     if (!dbAccount) return null;
     return this.mapToEntity(dbAccount);
+  }
+
+  async findAll(): Promise<AccountEntity[]> {
+    const dbAccounts = await this.repository.find({
+      where: { isDeleted: false },
+      relations: ['role', 'role.permissions'],
+      order: { createdAt: 'DESC' },
+    });
+    return dbAccounts.map((dbAccount) => this.mapToEntity(dbAccount));
   }
 
   private mapToEntity(dbAccount: DbAccountEntity): AccountEntity {

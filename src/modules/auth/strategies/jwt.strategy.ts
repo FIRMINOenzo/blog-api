@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import type { AccountRepository } from 'src/domain/repositories/account.repository';
 import { AccountEntity } from 'src/domain/entities/account.entity';
 import { UnauthorizedError } from 'src/domain/errors/unauthorized.error';
+import { UUID } from 'src/domain/value-objects';
 
 export interface JwtPayload {
   sub: string;
@@ -31,7 +32,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload): Promise<AccountEntity> {
-    const account = await this.accountRepository.findById(payload.sub);
+    const account = await this.accountRepository.findById(
+      new UUID(payload.sub),
+    );
 
     if (!account) {
       throw new UnauthorizedError('User not found or deleted');
