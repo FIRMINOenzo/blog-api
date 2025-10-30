@@ -3,6 +3,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AccountController } from './account.controller';
 import { CreateAccountUseCase } from './usecases/create-account.usecase';
+import { ListAccountsUseCase } from './usecases/list-accounts.usecase';
+import { GetAccountByIdUseCase } from './usecases/get-account-by-id.usecase';
+import { UpdateAccountUseCase } from './usecases/update-account.usecase';
+import { DeleteAccountUseCase } from './usecases/delete-account.usecase';
 import { HashPasswordService } from 'src/infra/services/hash-password.service';
 import { DbAccountRepository } from 'src/infra/repositories/db-account.repository';
 import { DbRoleRepository } from 'src/infra/repositories/db-role.repository';
@@ -20,6 +24,10 @@ import { DbRoleEntity } from 'src/infra/database/entities/db-role.entity';
   controllers: [AccountController],
   providers: [
     CreateAccountUseCase,
+    ListAccountsUseCase,
+    GetAccountByIdUseCase,
+    UpdateAccountUseCase,
+    DeleteAccountUseCase,
     HashPasswordService,
     {
       provide: 'AccountRepository',
