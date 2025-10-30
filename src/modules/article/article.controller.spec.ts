@@ -188,22 +188,33 @@ describe('ArticleController', () => {
   });
 
   describe('list', () => {
-    it('should call ListArticlesUseCase with current user', async () => {
+    it('should call ListArticlesUseCase with current user and pagination', async () => {
       const expectedOutput = {
-        articles: [],
-        total: 0,
+        data: [],
+        meta: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
       };
       listArticlesUseCase.execute.mockResolvedValue(expectedOutput);
 
-      await controller.list(EDITOR_ACCOUNT);
+      const pagination = { page: 1, limit: 10 };
+      await controller.list(EDITOR_ACCOUNT, pagination as any);
 
-      expect(listArticlesUseCase.execute).toHaveBeenCalledWith(EDITOR_ACCOUNT);
+      expect(listArticlesUseCase.execute).toHaveBeenCalledWith(EDITOR_ACCOUNT, {
+        page: 1,
+        limit: 10,
+      });
       expect(listArticlesUseCase.execute).toHaveBeenCalledTimes(1);
     });
 
     it('should return articles list from ListArticlesUseCase', async () => {
       const expectedOutput = {
-        articles: [
+        data: [
           {
             id: ARTICLE_ID,
             title: 'Test Article',
@@ -218,11 +229,19 @@ describe('ArticleController', () => {
             updatedAt: new Date(),
           },
         ],
-        total: 1,
+        meta: {
+          page: 1,
+          limit: 10,
+          total: 1,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
       };
       listArticlesUseCase.execute.mockResolvedValue(expectedOutput);
 
-      const result = await controller.list(EDITOR_ACCOUNT);
+      const pagination = { page: 1, limit: 10 };
+      const result = await controller.list(EDITOR_ACCOUNT, pagination as any);
 
       expect(result).toEqual(expectedOutput);
     });
