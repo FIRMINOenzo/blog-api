@@ -8,6 +8,7 @@ import {
   Permission,
   PermissionAction,
   PermissionSubject,
+  Slug,
 } from 'src/domain/value-objects';
 import { ForbiddenError } from 'src/domain/errors/forbidden.error';
 import { NotFoundError } from 'src/domain/errors/not-found.error';
@@ -98,7 +99,7 @@ describe('GetArticleBySlugUseCase', () => {
       expect(result.slug).toBe(article.getSlug());
       expect(result.author.id).toBe(AUTHOR_ACCOUNT.getId());
       expect(articleRepository.findBySlug).toHaveBeenCalledWith(
-        article.getSlug(),
+        new Slug(article.getSlug()),
       );
       expect(articleRepository.findBySlug).toHaveBeenCalledTimes(1);
     });
@@ -113,7 +114,7 @@ describe('GetArticleBySlugUseCase', () => {
       );
 
       expect(articleRepository.findBySlug).toHaveBeenCalledWith(
-        'non-existent-slug',
+        new Slug('non-existent-slug'),
       );
     });
 
