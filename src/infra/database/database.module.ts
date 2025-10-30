@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DbAccountEntity } from './entities/db-account.entity';
 import { DbRoleEntity } from './entities/db-role.entity';
 import { DbPermissionEntity } from './entities/db-permission.entity';
+import { DbArticleEntity } from './entities/db-article.entity';
 
 @Module({
   imports: [
@@ -21,7 +22,12 @@ import { DbPermissionEntity } from './entities/db-permission.entity';
         username: configService.get('DB_USERNAME', 'postgres'),
         password: configService.get('DB_PASSWORD', 'postgres'),
         database: configService.get('DB_DATABASE', 'blog_api'),
-        entities: [DbAccountEntity, DbRoleEntity, DbPermissionEntity],
+        entities: [
+          DbAccountEntity,
+          DbRoleEntity,
+          DbPermissionEntity,
+          DbArticleEntity,
+        ],
         synchronize: configService.get('DB_SYNCHRONIZE', 'false') === 'true',
         logging: configService.get('DB_LOGGING', 'false') === 'true',
         migrations: ['dist/infra/database/migrations/*.js'],
