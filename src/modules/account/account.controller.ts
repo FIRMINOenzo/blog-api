@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CreateAccountUseCase } from './usecases/create-account.usecase';
@@ -20,6 +21,7 @@ import { UpdateAccountDto } from './dto/update-account.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { AccountEntity } from 'src/domain/entities/account.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Controller('accounts')
 @UseGuards(JwtAuthGuard)
@@ -41,8 +43,14 @@ export class AccountController {
   }
 
   @Get()
-  async findAll(@CurrentUser() currentUser: AccountEntity) {
-    return this.listAccountsUseCase.execute(currentUser);
+  async findAll(
+    @CurrentUser() currentUser: AccountEntity,
+    @Query() pagination: PaginationDto,
+  ) {
+    return this.listAccountsUseCase.execute(currentUser, {
+      page: pagination.page,
+      limit: pagination.limit,
+    });
   }
 
   @Get(':id')

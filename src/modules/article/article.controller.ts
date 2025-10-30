@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -19,6 +20,7 @@ import { UpdateArticleUseCase } from './usecases/update-article.usecase';
 import { DeleteArticleUseCase } from './usecases/delete-article.usecase';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Controller('articles')
 @UseGuards(JwtAuthGuard)
@@ -41,8 +43,14 @@ export class ArticleController {
   }
 
   @Get()
-  async list(@CurrentUser() currentUser: AccountEntity) {
-    return this.listArticlesUseCase.execute(currentUser);
+  async list(
+    @CurrentUser() currentUser: AccountEntity,
+    @Query() pagination: PaginationDto,
+  ) {
+    return this.listArticlesUseCase.execute(currentUser, {
+      page: pagination.page,
+      limit: pagination.limit,
+    });
   }
 
   @Get('slug/:slug')
