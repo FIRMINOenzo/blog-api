@@ -5,3 +5,6 @@ export * from './password.vo';
 export * from './hashed-password.vo';
 export * from './uuid.vo';
 export * from './permission.vo';
+export * from './title.vo';
+export * from './content.vo';
+export * from './slug.vo';
