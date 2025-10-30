@@ -87,6 +87,7 @@ export class UpdateAccountUseCase {
         id: updatedAccount.getRole()!.getId(),
         name: updatedAccount.getRole()!.getName(),
       },
+      createdAt: updatedAccount.getCreatedAt(),
       updatedAt: updatedAccount.getUpdatedAt(),
     };
   }
@@ -107,5 +108,6 @@ export interface UpdateAccountOutput {
     id: string;
     name: string;
   };
+  createdAt: Date;
   updatedAt: Date;
 }

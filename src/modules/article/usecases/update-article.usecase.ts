@@ -35,6 +35,7 @@ export class UpdateArticleUseCase {
         name: article.getAuthor().getName(),
         email: article.getAuthor().getEmail(),
       },
+      createdAt: article.getCreatedAt(),
       updatedAt: article.getUpdatedAt(),
     };
   }
@@ -55,5 +56,6 @@ export interface UpdateArticleOutput {
     name: string;
     email: string;
   };
+  createdAt: Date;
   updatedAt: Date;
 }
