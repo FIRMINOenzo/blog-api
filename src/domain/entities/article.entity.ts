@@ -67,6 +67,10 @@ export class ArticleEntity {
       throw new ForbiddenError('You are not allowed to update articles');
     }
 
+    if (this.author.getId() !== allowedBy.getId()) {
+      throw new ForbiddenError('You can only update your own articles');
+    }
+
     let changed = false;
 
     if (title) {
@@ -81,6 +85,12 @@ export class ArticleEntity {
     }
 
     if (changed) this.updatedAt = new Date();
+  }
+
+  canBeDeletedBy(allowedBy: AccountEntity): boolean {
+    return !!allowedBy
+      .getRole()
+      ?.hasPermission(PermissionAction.DELETE, PermissionSubject.ARTICLE);
   }
 
   getId(): string {
