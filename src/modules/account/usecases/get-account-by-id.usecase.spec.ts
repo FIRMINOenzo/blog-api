@@ -97,9 +97,7 @@ describe('GetAccountByIdUseCase', () => {
       await useCase.execute(ADMIN_ACCOUNT, accountId);
 
       expect(accountRepository.findById).toHaveBeenCalledWith(
-        expect.objectContaining({
-          getValue: new UUID(accountId),
-        }),
+        new UUID(accountId),
       );
     });
 
