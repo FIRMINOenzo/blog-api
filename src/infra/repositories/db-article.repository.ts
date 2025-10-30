@@ -30,7 +30,7 @@ export class DbArticleRepository implements ArticleRepository {
   async findById(id: UUID): Promise<ArticleEntity | null> {
     const dbArticle = await this.repository.findOne({
       where: { id: id.getValue(), isDeleted: false },
-      relations: ['author', 'author.role', 'author.role.permissions'],
+      relations: ['author'],
     });
     if (!dbArticle) return null;
     return this.mapToEntity(dbArticle);
@@ -48,10 +48,26 @@ export class DbArticleRepository implements ArticleRepository {
   async findAll(): Promise<ArticleEntity[]> {
     const dbArticles = await this.repository.find({
       where: { isDeleted: false },
-      relations: ['author', 'author.role', 'author.role.permissions'],
+      relations: ['author'],
       order: { createdAt: 'DESC' },
     });
     return dbArticles.map((dbArticle) => this.mapToEntity(dbArticle));
+  }
+
+  async findAllPaginated(
+    skip: number,
+    take: number,
+  ): Promise<{ articles: ArticleEntity[]; total: number }> {
+    const [dbArticles, total] = await this.repository.findAndCount({
+      where: { isDeleted: false },
+      relations: ['author'],
+      order: { createdAt: 'DESC' },
+      skip,
+      take,
+    });
+
+    const articles = dbArticles.map((dbArticle) => this.mapToEntity(dbArticle));
+    return { articles, total };
   }
 
   async update(article: ArticleEntity): Promise<void> {

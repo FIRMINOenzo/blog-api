@@ -59,6 +59,22 @@ export class DbAccountRepository implements AccountRepository {
     return dbAccounts.map((dbAccount) => this.mapToEntity(dbAccount));
   }
 
+  async findAllPaginated(
+    skip: number,
+    take: number,
+  ): Promise<{ accounts: AccountEntity[]; total: number }> {
+    const [dbAccounts, total] = await this.repository.findAndCount({
+      where: { isDeleted: false },
+      relations: ['role', 'role.permissions'],
+      order: { createdAt: 'DESC' },
+      skip,
+      take,
+    });
+
+    const accounts = dbAccounts.map((dbAccount) => this.mapToEntity(dbAccount));
+    return { accounts, total };
+  }
+
   private mapToEntity(dbAccount: DbAccountEntity): AccountEntity {
     const role = dbAccount.role
       ? new RoleEntity(
