@@ -7,6 +7,7 @@ import {
   Permission,
   PermissionAction,
   PermissionSubject,
+  UUID,
 } from 'src/domain/value-objects';
 import { UnauthorizedError } from 'src/domain/errors/unauthorized.error';
 
@@ -60,7 +61,7 @@ describe('JwtStrategy', () => {
       const result = await jwtStrategy.validate(payload);
 
       expect(findByIdSpy).toHaveBeenCalledWith(
-        '550e8400-e29b-41d4-a716-446655440001',
+        new UUID('550e8400-e29b-41d4-a716-446655440001'),
       );
       expect(result).toBe(mockAccount);
       expect(result.getId()).toBe('550e8400-e29b-41d4-a716-446655440001');

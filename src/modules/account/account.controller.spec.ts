@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AccountController } from './account.controller';
 import { CreateAccountUseCase } from './usecases/create-account.usecase';
+import { ListAccountsUseCase } from './usecases/list-accounts.usecase';
+import { GetAccountByIdUseCase } from './usecases/get-account-by-id.usecase';
+import { UpdateAccountUseCase } from './usecases/update-account.usecase';
+import { DeleteAccountUseCase } from './usecases/delete-account.usecase';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { AccountEntity } from 'src/domain/entities/account.entity';
 import { RoleEntity } from 'src/domain/entities/role.entity';
@@ -43,12 +47,44 @@ describe('AccountController', () => {
       execute: jest.fn(),
     };
 
+    const mockListAccountsUseCase: Partial<ListAccountsUseCase> = {
+      execute: jest.fn(),
+    };
+
+    const mockGetAccountByIdUseCase: Partial<GetAccountByIdUseCase> = {
+      execute: jest.fn(),
+    };
+
+    const mockUpdateAccountUseCase: Partial<UpdateAccountUseCase> = {
+      execute: jest.fn(),
+    };
+
+    const mockDeleteAccountUseCase: Partial<DeleteAccountUseCase> = {
+      execute: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AccountController],
       providers: [
         {
           provide: CreateAccountUseCase,
           useValue: mockCreateAccountUseCase,
+        },
+        {
+          provide: ListAccountsUseCase,
+          useValue: mockListAccountsUseCase,
+        },
+        {
+          provide: GetAccountByIdUseCase,
+          useValue: mockGetAccountByIdUseCase,
+        },
+        {
+          provide: UpdateAccountUseCase,
+          useValue: mockUpdateAccountUseCase,
+        },
+        {
+          provide: DeleteAccountUseCase,
+          useValue: mockDeleteAccountUseCase,
         },
       ],
     }).compile();
