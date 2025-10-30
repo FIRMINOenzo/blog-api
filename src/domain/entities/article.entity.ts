@@ -29,7 +29,7 @@ export class ArticleEntity {
     this.id = new UUID(id);
     this.title = new Title(title);
     this.content = new Content(content);
-    this.slug = Slug.fromTitle(title);
+    this.slug = Slug.fromTitle(title, this.id);
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.author = author;
@@ -71,7 +71,7 @@ export class ArticleEntity {
 
     if (title) {
       this.title = new Title(title);
-      this.slug = Slug.fromTitle(title);
+      this.slug = Slug.fromTitle(title, this.id);
       changed = true;
     }
 

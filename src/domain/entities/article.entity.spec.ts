@@ -55,7 +55,7 @@ describe('ArticleEntity', () => {
       expect(article.getId()).toBeDefined();
       expect(article.getTitle()).toBe(VALID_TITLE);
       expect(article.getContent()).toBe(VALID_CONTENT);
-      expect(article.getSlug()).toBe('my-article-title');
+      expect(article.getSlug()).toMatch(/^my-article-title-[a-f0-9]{8}$/);
       expect(article.getCreatedAt()).toBeInstanceOf(Date);
       expect(article.getUpdatedAt()).toBeInstanceOf(Date);
       expect(article.getAuthor()).toBe(EDITOR_ACCOUNT);
@@ -68,7 +68,9 @@ describe('ArticleEntity', () => {
         title,
         VALID_CONTENT,
       );
-      expect(article.getSlug()).toBe('criacao-de-apis-restful');
+      expect(article.getSlug()).toMatch(
+        /^criacao-de-apis-restful-[a-f0-9]{8}$/,
+      );
     });
 
     it('should set createdAt and updatedAt to same value', () => {
@@ -136,7 +138,7 @@ describe('ArticleEntity', () => {
       const originalSlug = article.getSlug();
       article.update(EDITOR_ACCOUNT, 'New Title', VALID_CONTENT);
       expect(article.getSlug()).not.toBe(originalSlug);
-      expect(article.getSlug()).toBe('new-title');
+      expect(article.getSlug()).toMatch(/^new-title-[a-f0-9]{8}$/);
     });
 
     it('should throw ForbiddenError when user lacks UPDATE:ARTICLE permission', () => {

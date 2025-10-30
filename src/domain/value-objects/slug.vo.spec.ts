@@ -1,5 +1,6 @@
 import { Slug } from './slug.vo';
 import { ValueObjectValidationError } from '../errors/value-object-validation.error';
+import { UUID } from './uuid.vo';
 
 describe('Slug', () => {
   describe('constructor', () => {
@@ -106,6 +107,24 @@ describe('Slug', () => {
       const title = 'Programação em TypeScript';
       const slug = Slug.fromTitle(title);
       expect(slug.getValue()).toBe('programacao-em-typescript');
+    });
+
+    it('should append last 8 characters of ID when provided', () => {
+      const title = 'My Article Title';
+      const id = new UUID('550e8400-e29b-41d4-a716-446655440000');
+      const slug = Slug.fromTitle(title, id);
+      expect(slug.getValue()).toBe('my-article-title-55440000');
+    });
+
+    it('should generate unique slugs for same title with different IDs', () => {
+      const title = 'Same Title';
+      const id1 = '550e8400-e29b-41d4-a716-446655440001';
+      const id2 = '550e8400-e29b-41d4-a716-446655440002';
+      const slug1 = Slug.fromTitle(title, new UUID(id1));
+      const slug2 = Slug.fromTitle(title, new UUID(id2));
+      expect(slug1.getValue()).toBe('same-title-55440001');
+      expect(slug2.getValue()).toBe('same-title-55440002');
+      expect(slug1.getValue()).not.toBe(slug2.getValue());
     });
   });
 });

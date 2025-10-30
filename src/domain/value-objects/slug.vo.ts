@@ -1,4 +1,5 @@
 import { ValueObjectValidationError } from '../errors/value-object-validation.error';
+import { UUID } from './uuid.vo';
 import { ValueObject } from './value-object.interface';
 
 export class Slug implements ValueObject<string> {
@@ -20,8 +21,8 @@ export class Slug implements ValueObject<string> {
     return this.value;
   }
 
-  static fromTitle(title: string): Slug {
-    const slug = title
+  static fromTitle(title: string, id?: UUID): Slug {
+    const baseSlug = title
       .toLowerCase()
       .trim()
       .normalize('NFD')
@@ -30,6 +31,8 @@ export class Slug implements ValueObject<string> {
       .replace(Slug.REPLACE_SPACES_REGEX, '-')
       .replace(Slug.REMOVE_DUPLICATE_HYPHENS_REGEX, '-')
       .replace(Slug.REMOVE_START_AND_END_HYPHENS_REGEX, '');
+
+    const slug = id ? `${baseSlug}-${id.getValue().slice(-8)}` : baseSlug;
 
     return new Slug(slug);
   }
