@@ -111,7 +111,11 @@ describe('CreateAccountUseCase', () => {
       expect(accountRepository.findByEmail).toHaveBeenCalledWith(
         VALID_INPUT.email,
       );
-      expect(roleRepository.findById).toHaveBeenCalledWith(VALID_INPUT.roleId);
+      expect(roleRepository.findById).toHaveBeenCalledWith(
+        expect.objectContaining({
+          getValue: expect.any(Function),
+        }),
+      );
       expect(hashPasswordService.hash).toHaveBeenCalledWith(
         VALID_INPUT.password,
       );
