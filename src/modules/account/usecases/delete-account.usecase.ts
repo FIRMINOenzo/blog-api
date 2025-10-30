@@ -25,18 +25,14 @@ export class DeleteAccountUseCase {
       throw new ForbiddenError('You are not allowed to delete accounts');
     }
 
-    // Buscar conta existente
     const account = await this.accountRepository.findById(new UUID(accountId));
     if (!account) {
       throw new NotFoundError(`Account with id '${accountId}' not found`);
     }
-
-    // Impedir auto-exclusão
     if (account.getId() === currentUser.getId()) {
       throw new ForbiddenError('You cannot delete your own account');
     }
 
-    // Soft delete
     await this.accountRepository.delete(account);
   }
 }

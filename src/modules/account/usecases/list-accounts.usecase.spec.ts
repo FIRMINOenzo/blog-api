@@ -77,14 +77,11 @@ describe('ListAccountsUseCase', () => {
 
   describe('execute', () => {
     it('should return list of accounts with correct format', async () => {
-      // Arrange
       const accounts = [ACCOUNT_1, ACCOUNT_2];
       accountRepository.findAll.mockResolvedValue(accounts);
 
-      // Act
       const result = await useCase.execute(ADMIN_ACCOUNT);
 
-      // Assert
       expect(result).toEqual({
         accounts: [
           {
@@ -116,13 +113,10 @@ describe('ListAccountsUseCase', () => {
     });
 
     it('should return empty list when no accounts exist', async () => {
-      // Arrange
       accountRepository.findAll.mockResolvedValue([]);
 
-      // Act
       const result = await useCase.execute(ADMIN_ACCOUNT);
 
-      // Assert
       expect(result).toEqual({
         accounts: [],
         total: 0,
@@ -131,7 +125,6 @@ describe('ListAccountsUseCase', () => {
     });
 
     it('should throw ForbiddenError when user lacks READ:ACCOUNT permission', async () => {
-      // Arrange
       const editorAccount = new AccountEntity(
         '550e8400-e29b-41d4-a716-446655440005',
         'Editor User',
@@ -142,7 +135,6 @@ describe('ListAccountsUseCase', () => {
         EDITOR_ROLE,
       );
 
-      // Act & Assert
       await expect(useCase.execute(editorAccount)).rejects.toThrow(
         ForbiddenError,
       );
@@ -155,25 +147,19 @@ describe('ListAccountsUseCase', () => {
     });
 
     it('should handle single account in list', async () => {
-      // Arrange
       accountRepository.findAll.mockResolvedValue([ACCOUNT_1]);
 
-      // Act
       const result = await useCase.execute(ADMIN_ACCOUNT);
 
-      // Assert
       expect(result.accounts).toHaveLength(1);
       expect(result.accounts[0].id).toBe(ACCOUNT_1.getId());
     });
 
     it('should map all account properties correctly', async () => {
-      // Arrange
       accountRepository.findAll.mockResolvedValue([ACCOUNT_1]);
 
-      // Act
       const result = await useCase.execute(ADMIN_ACCOUNT);
 
-      // Assert
       const account = result.accounts[0];
       expect(account).toHaveProperty('id');
       expect(account).toHaveProperty('name');

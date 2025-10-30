@@ -27,7 +27,6 @@ export class UpdateAccountUseCase {
     accountId: string,
     input: UpdateAccountInput,
   ): Promise<UpdateAccountOutput> {
-    // Verificar permissão de edição de contas
     if (
       !currentUser
         .getRole()
@@ -36,13 +35,11 @@ export class UpdateAccountUseCase {
       throw new ForbiddenError('You are not allowed to update accounts');
     }
 
-    // Buscar conta existente
     const account = await this.accountRepository.findById(new UUID(accountId));
     if (!account) {
       throw new NotFoundError(`Account with id '${accountId}' not found`);
     }
 
-    // Verificar se email já está em uso por outra conta
     if (input.email && input.email !== account.getEmail()) {
       const existingAccount = await this.accountRepository.findByEmail(
         input.email,
@@ -54,7 +51,6 @@ export class UpdateAccountUseCase {
       }
     }
 
-    // Verificar se role existe (se foi fornecido)
     let role = account.getRole();
     if (input.roleId) {
       const newRole = await this.roleRepository.findById(
@@ -66,13 +62,11 @@ export class UpdateAccountUseCase {
       role = newRole;
     }
 
-    // Atualizar senha se fornecida
     let password = account.getPassword();
     if (input.password) {
       password = await this.hashPasswordService.hash(input.password);
     }
 
-    // Atualizar conta
     const updatedAccount = new AccountEntity(
       account.getId(),
       input.name ?? account.getName(),

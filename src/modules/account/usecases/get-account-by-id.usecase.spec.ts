@@ -9,6 +9,7 @@ import {
   Permission,
   PermissionAction,
   PermissionSubject,
+  UUID,
 } from 'src/domain/value-objects';
 
 describe('GetAccountByIdUseCase', () => {
@@ -68,16 +69,13 @@ describe('GetAccountByIdUseCase', () => {
 
   describe('execute', () => {
     it('should return account details when account exists', async () => {
-      // Arrange
       accountRepository.findById.mockResolvedValue(TARGET_ACCOUNT);
 
-      // Act
       const result = await useCase.execute(
         ADMIN_ACCOUNT,
         TARGET_ACCOUNT.getId(),
       );
 
-      // Assert
       expect(result).toEqual({
         id: TARGET_ACCOUNT.getId(),
         name: TARGET_ACCOUNT.getName(),
@@ -93,27 +91,22 @@ describe('GetAccountByIdUseCase', () => {
     });
 
     it('should call repository with correct UUID', async () => {
-      // Arrange
       const accountId = '550e8400-e29b-41d4-a716-446655440003';
       accountRepository.findById.mockResolvedValue(TARGET_ACCOUNT);
 
-      // Act
       await useCase.execute(ADMIN_ACCOUNT, accountId);
 
-      // Assert
       expect(accountRepository.findById).toHaveBeenCalledWith(
         expect.objectContaining({
-          getValue: expect.any(Function),
+          getValue: new UUID(accountId),
         }),
       );
     });
 
     it('should throw NotFoundError when account does not exist', async () => {
-      // Arrange
       const nonExistentId = '550e8400-e29b-41d4-a716-446655440099';
       accountRepository.findById.mockResolvedValue(null);
 
-      // Act & Assert
       await expect(
         useCase.execute(ADMIN_ACCOUNT, nonExistentId),
       ).rejects.toThrow(NotFoundError);
@@ -124,7 +117,6 @@ describe('GetAccountByIdUseCase', () => {
     });
 
     it('should throw ForbiddenError when user lacks READ:ACCOUNT permission', async () => {
-      // Arrange
       const editorAccount = new AccountEntity(
         '550e8400-e29b-41d4-a716-446655440004',
         'Editor User',
@@ -135,7 +127,6 @@ describe('GetAccountByIdUseCase', () => {
         EDITOR_ROLE,
       );
 
-      // Act & Assert
       await expect(
         useCase.execute(editorAccount, TARGET_ACCOUNT.getId()),
       ).rejects.toThrow(ForbiddenError);
@@ -148,10 +139,8 @@ describe('GetAccountByIdUseCase', () => {
     });
 
     it('should throw error when invalid UUID format is provided', async () => {
-      // Arrange
       const invalidId = 'invalid-uuid';
 
-      // Act & Assert
       await expect(useCase.execute(ADMIN_ACCOUNT, invalidId)).rejects.toThrow();
     });
   });

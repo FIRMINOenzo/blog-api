@@ -12,7 +12,6 @@ export class ListAccountsUseCase {
   ) {}
 
   async execute(currentUser: AccountEntity): Promise<ListAccountsOutput> {
-    // Verificar permissão de leitura de contas
     if (
       !currentUser
         .getRole()

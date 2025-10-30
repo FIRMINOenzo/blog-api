@@ -9,6 +9,7 @@ import {
   Permission,
   PermissionAction,
   PermissionSubject,
+  UUID,
 } from 'src/domain/value-objects';
 
 describe('DeleteAccountUseCase', () => {
@@ -69,41 +70,31 @@ describe('DeleteAccountUseCase', () => {
 
   describe('execute', () => {
     it('should delete account successfully', async () => {
-      // Arrange
       const accountId = TARGET_ACCOUNT.getId();
       accountRepository.findById.mockResolvedValue(TARGET_ACCOUNT);
 
-      // Act
       await useCase.execute(ADMIN_ACCOUNT, accountId);
 
-      // Assert
       expect(accountRepository.findById).toHaveBeenCalledTimes(1);
       expect(accountRepository.delete).toHaveBeenCalledWith(TARGET_ACCOUNT);
       expect(accountRepository.delete).toHaveBeenCalledTimes(1);
     });
 
     it('should call repository with correct UUID', async () => {
-      // Arrange
       const accountId = TARGET_ACCOUNT.getId();
       accountRepository.findById.mockResolvedValue(TARGET_ACCOUNT);
 
-      // Act
       await useCase.execute(ADMIN_ACCOUNT, accountId);
 
-      // Assert
       expect(accountRepository.findById).toHaveBeenCalledWith(
-        expect.objectContaining({
-          getValue: expect.any(Function),
-        }),
+        new UUID(accountId),
       );
     });
 
     it('should throw NotFoundError when account does not exist', async () => {
-      // Arrange
       const nonExistentId = '550e8400-e29b-41d4-a716-446655440099';
       accountRepository.findById.mockResolvedValue(null);
 
-      // Act & Assert
       await expect(
         useCase.execute(ADMIN_ACCOUNT, nonExistentId),
       ).rejects.toThrow(NotFoundError);
@@ -116,7 +107,6 @@ describe('DeleteAccountUseCase', () => {
     });
 
     it('should throw ForbiddenError when user lacks DELETE:ACCOUNT permission', async () => {
-      // Arrange
       const editorAccount = new AccountEntity(
         '550e8400-e29b-41d4-a716-446655440004',
         'Editor User',
@@ -127,7 +117,6 @@ describe('DeleteAccountUseCase', () => {
         EDITOR_ROLE,
       );
 
-      // Act & Assert
       await expect(
         useCase.execute(editorAccount, TARGET_ACCOUNT.getId()),
       ).rejects.toThrow(ForbiddenError);
@@ -141,11 +130,9 @@ describe('DeleteAccountUseCase', () => {
     });
 
     it('should throw ForbiddenError when trying to delete own account', async () => {
-      // Arrange
       const adminId = ADMIN_ACCOUNT.getId();
       accountRepository.findById.mockResolvedValue(ADMIN_ACCOUNT);
 
-      // Act & Assert
       await expect(useCase.execute(ADMIN_ACCOUNT, adminId)).rejects.toThrow(
         ForbiddenError,
       );
@@ -158,11 +145,9 @@ describe('DeleteAccountUseCase', () => {
     });
 
     it('should prevent self-deletion even with valid permissions', async () => {
-      // Arrange
       const adminId = ADMIN_ACCOUNT.getId();
       accountRepository.findById.mockResolvedValue(ADMIN_ACCOUNT);
 
-      // Act & Assert
       await expect(useCase.execute(ADMIN_ACCOUNT, adminId)).rejects.toThrow(
         'You cannot delete your own account',
       );
@@ -172,7 +157,6 @@ describe('DeleteAccountUseCase', () => {
     });
 
     it('should allow admin to delete other accounts', async () => {
-      // Arrange
       const anotherAdmin = new AccountEntity(
         '550e8400-e29b-41d4-a716-446655440010',
         'Another Admin',
@@ -184,31 +168,24 @@ describe('DeleteAccountUseCase', () => {
       );
       accountRepository.findById.mockResolvedValue(anotherAdmin);
 
-      // Act
       await useCase.execute(ADMIN_ACCOUNT, anotherAdmin.getId());
 
-      // Assert
       expect(accountRepository.delete).toHaveBeenCalledWith(anotherAdmin);
     });
 
     it('should throw error when invalid UUID format is provided', async () => {
-      // Arrange
       const invalidId = 'invalid-uuid';
 
-      // Act & Assert
       await expect(useCase.execute(ADMIN_ACCOUNT, invalidId)).rejects.toThrow();
 
       expect(accountRepository.delete).not.toHaveBeenCalled();
     });
 
     it('should pass the account entity to repository delete method', async () => {
-      // Arrange
       accountRepository.findById.mockResolvedValue(TARGET_ACCOUNT);
 
-      // Act
       await useCase.execute(ADMIN_ACCOUNT, TARGET_ACCOUNT.getId());
 
-      // Assert
       const deletedAccount = accountRepository.delete.mock.calls[0][0];
       expect(deletedAccount).toBeInstanceOf(AccountEntity);
       expect(deletedAccount.getId()).toBe(TARGET_ACCOUNT.getId());
