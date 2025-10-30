@@ -6,6 +6,10 @@ export interface ArticleRepository {
   findById(id: UUID): Promise<ArticleEntity | null>;
   findBySlug(slug: Slug): Promise<ArticleEntity | null>;
   findAll(): Promise<ArticleEntity[]>;
+  findAllPaginated(
+    skip: number,
+    take: number,
+  ): Promise<{ articles: ArticleEntity[]; total: number }>;
   update(article: ArticleEntity): Promise<void>;
   delete(id: UUID): Promise<void>;
 }
