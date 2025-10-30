@@ -1,13 +1,11 @@
-import { IsNotEmpty, IsString, Length, MaxLength } from 'class-validator';
+import { IsDefined, IsString } from 'class-validator';
 
 export class CreateArticleDto {
+  @IsDefined()
   @IsString()
-  @IsNotEmpty()
-  @Length(5, 150)
   title: string;
 
+  @IsDefined()
   @IsString()
-  @IsNotEmpty()
-  @Length(100, 50000)
   content: string;
 }
