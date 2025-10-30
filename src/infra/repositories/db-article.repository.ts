@@ -3,15 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ArticleEntity } from 'src/domain/entities/article.entity';
 import { AccountEntity } from 'src/domain/entities/account.entity';
-import { RoleEntity } from 'src/domain/entities/role.entity';
 import { ArticleRepository } from 'src/domain/repositories/article.repository';
 import { DbArticleEntity } from '../database/entities/db-article.entity';
-import {
-  Permission,
-  PermissionAction,
-  PermissionSubject,
-  UUID,
-} from 'src/domain/value-objects';
+import { Slug, UUID } from 'src/domain/value-objects';
 
 @Injectable()
 export class DbArticleRepository implements ArticleRepository {
@@ -42,6 +36,15 @@ export class DbArticleRepository implements ArticleRepository {
     return this.mapToEntity(dbArticle);
   }
 
+  async findBySlug(slug: Slug): Promise<ArticleEntity | null> {
+    const dbArticle = await this.repository.findOne({
+      where: { slug: slug.getValue(), isDeleted: false },
+      relations: ['author'],
+    });
+    if (!dbArticle) return null;
+    return this.mapToEntity(dbArticle);
+  }
+
   async findAll(): Promise<ArticleEntity[]> {
     const dbArticles = await this.repository.find({
       where: { isDeleted: false },
@@ -62,28 +65,14 @@ export class DbArticleRepository implements ArticleRepository {
     await this.repository.save(dbArticle);
   }
 
-  async delete(article: ArticleEntity): Promise<void> {
+  async delete(id: UUID): Promise<void> {
     await this.repository.update(
-      { id: article.getId() },
-      { isDeleted: true, updatedAt: article.getUpdatedAt() },
+      { id: id.getValue() },
+      { isDeleted: true, updatedAt: new Date() },
     );
   }
 
   private mapToEntity(dbArticle: DbArticleEntity): ArticleEntity {
-    const role = dbArticle.author.role
-      ? new RoleEntity(
-          dbArticle.author.role.id,
-          dbArticle.author.role.name,
-          dbArticle.author.role.permissions?.map(
-            (p) =>
-              new Permission(
-                p.action as PermissionAction,
-                p.subject as PermissionSubject,
-              ),
-          ),
-        )
-      : undefined;
-
     const author = new AccountEntity(
       dbArticle.author.id,
       dbArticle.author.name,
@@ -91,7 +80,7 @@ export class DbArticleRepository implements ArticleRepository {
       dbArticle.author.password,
       dbArticle.author.createdAt,
       dbArticle.author.updatedAt,
-      role,
+      undefined,
     );
 
     return new ArticleEntity(
