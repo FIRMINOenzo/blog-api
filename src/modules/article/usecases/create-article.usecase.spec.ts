@@ -76,17 +76,17 @@ describe('CreateArticleUseCase', () => {
       const result = await useCase.execute(EDITOR_ACCOUNT, VALID_INPUT);
 
       expect(result).toEqual({
-        id: expect.any(String),
+        id: expect.any(String) as string,
         title: VALID_INPUT.title,
         content: VALID_INPUT.content,
-        slug: expect.stringMatching(/^my-first-article-[a-f0-9]{8}$/),
+        slug: expect.stringMatching(/^my-first-article-[a-f0-9]{8}$/) as string,
         author: {
           id: EDITOR_ACCOUNT.getId(),
           name: EDITOR_ACCOUNT.getName(),
           email: EDITOR_ACCOUNT.getEmail(),
         },
-        createdAt: expect.any(Date),
-        updatedAt: expect.any(Date),
+        createdAt: expect.any(Date) as Date,
+        updatedAt: expect.any(Date) as Date,
       });
       expect(articleRepository.create).toHaveBeenCalledTimes(1);
     });
@@ -161,11 +161,11 @@ describe('CreateArticleUseCase', () => {
 
       expect(articleRepository.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          getId: expect.any(Function),
-          getTitle: expect.any(Function),
-          getContent: expect.any(Function),
-          getSlug: expect.any(Function),
-          getAuthor: expect.any(Function),
+          getId: expect.any(Function) as () => string,
+          getTitle: expect.any(Function) as () => string,
+          getContent: expect.any(Function) as () => string,
+          getSlug: expect.any(Function) as () => string,
+          getAuthor: expect.any(Function) as () => AccountEntity,
         }),
       );
     });

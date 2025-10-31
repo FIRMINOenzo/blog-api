@@ -34,4 +34,3 @@ export class UpdateAccountDto {
   @IsString()
   readonly roleId?: string;
 }
-
