@@ -13,6 +13,7 @@ import {
   Permission,
   PermissionAction,
   PermissionSubject,
+  UUID,
 } from 'src/domain/value-objects';
 
 describe('CreateAccountUseCase', () => {
@@ -112,9 +113,7 @@ describe('CreateAccountUseCase', () => {
         VALID_INPUT.email,
       );
       expect(roleRepository.findById).toHaveBeenCalledWith(
-        expect.objectContaining({
-          getValue: expect.any(Function),
-        }),
+        expect.objectContaining(new UUID(VALID_INPUT.roleId)),
       );
       expect(hashPasswordService.hash).toHaveBeenCalledWith(
         VALID_INPUT.password,

@@ -4,7 +4,10 @@ import { CreateArticleUseCase } from './usecases/create-article.usecase';
 import { ListArticlesUseCase } from './usecases/list-articles.usecase';
 import { GetArticleByIdUseCase } from './usecases/get-article-by-id.usecase';
 import { GetArticleBySlugUseCase } from './usecases/get-article-by-slug.usecase';
-import { UpdateArticleUseCase } from './usecases/update-article.usecase';
+import {
+  UpdateArticleOutput,
+  UpdateArticleUseCase,
+} from './usecases/update-article.usecase';
 import { DeleteArticleUseCase } from './usecases/delete-article.usecase';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
@@ -15,6 +18,7 @@ import {
   PermissionAction,
   PermissionSubject,
 } from 'src/domain/value-objects';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 describe('ArticleController', () => {
   let controller: ArticleController;
@@ -203,7 +207,7 @@ describe('ArticleController', () => {
       listArticlesUseCase.execute.mockResolvedValue(expectedOutput);
 
       const pagination = { page: 1, limit: 10 };
-      await controller.list(EDITOR_ACCOUNT, pagination as any);
+      await controller.list(EDITOR_ACCOUNT, pagination as PaginationDto);
 
       expect(listArticlesUseCase.execute).toHaveBeenCalledWith(EDITOR_ACCOUNT, {
         page: 1,
@@ -241,7 +245,10 @@ describe('ArticleController', () => {
       listArticlesUseCase.execute.mockResolvedValue(expectedOutput);
 
       const pagination = { page: 1, limit: 10 };
-      const result = await controller.list(EDITOR_ACCOUNT, pagination as any);
+      const result = await controller.list(
+        EDITOR_ACCOUNT,
+        pagination as PaginationDto,
+      );
 
       expect(result).toEqual(expectedOutput);
     });
@@ -359,7 +366,9 @@ describe('ArticleController', () => {
         },
         updatedAt: new Date(),
       };
-      updateArticleUseCase.execute.mockResolvedValue(expectedOutput);
+      updateArticleUseCase.execute.mockResolvedValue(
+        expectedOutput as UpdateArticleOutput,
+      );
 
       await controller.update(EDITOR_ACCOUNT, ARTICLE_ID, VALID_UPDATE_DTO);
 
@@ -384,7 +393,9 @@ describe('ArticleController', () => {
         },
         updatedAt: new Date(),
       };
-      updateArticleUseCase.execute.mockResolvedValue(expectedOutput);
+      updateArticleUseCase.execute.mockResolvedValue(
+        expectedOutput as UpdateArticleOutput,
+      );
 
       const result = await controller.update(
         EDITOR_ACCOUNT,
