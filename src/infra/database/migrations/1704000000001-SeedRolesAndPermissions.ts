@@ -27,17 +27,17 @@ export class SeedRolesAndPermissions1704000000001
     }
 
     const adminRoleResult = (await queryRunner.query(
-      `INSERT INTO "roles" ("name") VALUES ('ADMIN') RETURNING "id"`,
+      `INSERT INTO "roles" ("id", "name") VALUES ('ca73df2c-f18d-4d81-b119-565da3ad58f2', 'ADMIN') RETURNING "id"`,
     )) as { id: string }[];
     const adminRoleId = adminRoleResult[0].id;
 
     const editorRoleResult = (await queryRunner.query(
-      `INSERT INTO "roles" ("name") VALUES ('EDITOR') RETURNING "id"`,
+      `INSERT INTO "roles" ("id", "name") VALUES ('062f8c5b-9bbc-4705-8b65-4de5823996a7', 'EDITOR') RETURNING "id"`,
     )) as { id: string }[];
     const editorRoleId = editorRoleResult[0].id;
 
     const readerRoleResult = (await queryRunner.query(
-      `INSERT INTO "roles" ("name") VALUES ('READER') RETURNING "id"`,
+      `INSERT INTO "roles" ("id", "name") VALUES ('e7c7b813-d12a-4844-a5bd-63b44d64ee6e', 'READER') RETURNING "id"`,
     )) as { id: string }[];
     const readerRoleId = readerRoleResult[0].id;
 
